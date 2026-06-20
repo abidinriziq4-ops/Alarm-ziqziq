@@ -1,113 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Islamic Smart App PRO</title>
-
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0b1220;
-  color:white;
-  text-align:center;
-}
-
-header{
-  background:#00a8ff;
-  padding:15px;
-  font-weight:bold;
-}
-
-.card{
-  background:#1e293b;
-  margin:12px auto;
-  padding:15px;
-  width:90%;
-  border-radius:12px;
-}
-
-#clock{
-  font-size:50px;
-  font-weight:bold;
-}
-
-input,select,button{
-  padding:10px;
-  border-radius:8px;
-  margin:5px;
-}
-</style>
+<title>Jam Sholat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-<body>
+<body style="background:#0f172a;color:white;text-align:center;font-family:Arial;">
 
-<header>🕌 Islamic Smart App PRO</header>
+<h2>Jam Sholat</h2>
 
-<!-- JAM -->
-<div class="card">
-  <div id="clock">00:00:00</div>
-</div>
+<h1 id="clock">Loading...</h1>
 
-<!-- KOTA -->
-<div class="card">
-  <select id="city">
-    <option>Jakarta</option>
-    <option>Surabaya</option>
-    <option>Bandung</option>
-    <option>Medan</option>
-    <option>Semarang</option>
-    <option>Makassar</option>
-    <option>Palembang</option>
-    <option>Yogyakarta</option>
-    <option>Denpasar</option>
-    <option>Malang</option>
-    <option>Batam</option>
-    <option>Pekanbaru</option>
-  </select>
-  <br>
-  <button onclick="loadSholat()">Update Waktu Sholat</button>
-</div>
+<select id="kota">
+  <option>Surabaya</option>
+  <option>Jakarta</option>
+</select>
+<button onclick="setKota()">Ambil</button>
 
-<!-- SHOLAT -->
-<div class="card">
-  <p id="subuh">Subuh: --</p>
-  <p id="dzuhur">Dzuhur: --</p>
-  <p id="ashar">Ashar: --</p>
-  <p id="maghrib">Maghrib: --</p>
-  <p id="isya">Isya: --</p>
-</div>
+<div id="subuh"></div>
+<div id="dzuhur"></div>
+<div id="ashar"></div>
+<div id="maghrib"></div>
+<div id="isya"></div>
 
-<!-- 🔊 PILIH JENIS ALARM -->
-<div class="card">
-  <h3>🔊 Pilih Jenis Alarm</h3>
+<br><br>
 
-  <select id="alarmMode">
-    <option value="alarm">Alarm Biasa</option>
-    <option value="azan">Adzan</option>
-  </select>
+<select id="alarmMode">
+  <option value="azan">Adzan</option>
+  <option value="biasa">Biasa</option>
+</select>
 
-  <p style="font-size:12px;color:#aaa">
-    (Untuk alarm manual)
-  </p>
-</div>
+<br><br>
 
-<!-- ALARM MANUAL -->
-<div class="card">
-  <h3>🔔 Alarm Manual</h3>
+<input type="time" id="manualTime">
+<button onclick="setManualAlarm()">Set Alarm</button>
 
-  <input type="time" id="alarmTime">
-  <button onclick="setAlarm()">Set Alarm</button>
-
-  <p id="status">Belum diset</p>
-</div>
-
-<!-- STOP -->
-<div class="card">
-  <button onclick="stopSound()">⛔ Stop Alarm</button>
-</div>
-
-<!-- JS -->
 <script src="script.js"></script>
 
 </body>
