@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Islamic Smart App Full</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0b1220;
+  color:white;
+  text-align:center;
+}
+
+header{
+  background:#00a8ff;
+  padding:15px;
+  font-weight:bold;
+}
+
+.card{
+  background:#1e293b;
+  margin:12px auto;
+  padding:15px;
+  width:90%;
+  border-radius:12px;
+}
+
+#clock{
+  font-size:50px;
+  font-weight:bold;
+}
+
+input,select,button{
+  padding:10px;
+  border-radius:8px;
+  margin:5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>🕌 Islamic Smart App FULL</header>
+
+<!-- JAM -->
+<div class="card">
+  <div id="clock">00:00:00</div>
+</div>
+
+<!-- KOTA -->
+<div class="card">
+  <select id="city">
+    <option>Jakarta</option>
+    <option>Surabaya</option>
+    <option>Bandung</option>
+    <option>Medan</option>
+    <option>Semarang</option>
+    <option>Makassar</option>
+    <option>Palembang</option>
+    <option>Yogyakarta</option>
+    <option>Denpasar</option>
+    <option>Malang</option>
+    <option>Batam</option>
+    <option>Pekanbaru</option>
+  </select>
+
+  <br>
+  <button onclick="loadSholat()">Update Waktu Sholat</button>
+</div>
+
+<!-- SHOLAT -->
+<div class="card">
+  <p id="subuh">Subuh: --</p>
+  <p id="dzuhur">Dzuhur: --</p>
+  <p id="ashar">Ashar: --</p>
+  <p id="maghrib">Maghrib: --</p>
+  <p id="isya">Isya: --</p>
+</div>
+
+<!-- ALARM MANUAL -->
+<div class="card">
+  <h3>🔔 Alarm Manual</h3>
+
+  <input type="time" id="alarmTime">
+  <button onclick="setAlarm()">Set Alarm</button>
+
+  <p id="status">Belum diset</p>
+</div>
+
+<script>
+
+// =====================
+// JAM REALTIME
+// =====================
+setInterval(() => {
+
+  let d = new Date();
+
+  let h = String(d.getHours()).padStart(2,'0');
+  let m = String(d.getMinutes()).padStart(2,'0');
+  let s = String(d.getSeconds()).padStart(2,'0');
+
+  document.getElementById("clock").innerText =
+    h + ":" + m + ":" + s;
+
+}, 1000);
+
+// =====================
+// DATA SHOLAT
+// =====================
+let prayer = {};
+let lastAuto = "";
+
+// =====================
+// API SHOLAT
+// =====================
+function loadSholat(){
+
+  let city = document.getElementById("city").value;
+
+  fetch("https://api.aladhan.com/v1/timingsByCity?city=" + city + "&country=Indonesia&method=20")
+  .then(r => r.json())
+  .then(d => {
+
+    prayer = d.data.timings;
+
+    document.getElementById("subuh").innerText = "Subuh: " + prayer.Fajr;
+    document.getElementById("dzuhur").innerText = "Dzuhur: " + prayer.Dhuhr;
+    document.getElementById("ashar").innerText = "Ashar: " + prayer.Asr;
+    document.getElementById("maghrib").innerText = "Maghrib: " + prayer.Maghrib;
+    document.getElementById("isya").innerText = "Isya: " + prayer.Isha;
+
+  })
+  .catch(e => alert("API error ❌"));
+}
+
+loadSholat();
+
+// =====================
+// ALARM SHOLAT AUTO
+// =====================
+setInterval(() => {
+
+  if(!prayer.Fajr) return;
+
+  let now = new Date();
+  let t = String(now.getHours()).padStart(2,'0') + ":" +
+          String(now.getMinutes()).padStart(2,'0');
+
+  let map = {
+    [prayer.Fajr.slice(0,5)]:"Subuh",
+    [prayer.Dhuhr.slice(0,5)]:"Dzuhur",
+    [prayer.Asr.slice(0,5)]:"Ashar",
+    [prayer.Maghrib.slice(0,5)]:"Maghrib",
+    [prayer.Isha.slice(0,5)]:"Isya"
+  };
+
+  if(map[t] && lastAuto !== t){
+    lastAuto = t;
+
+    alert("🕌 Waktu " + map[t]);
+    playSound();
+  }
+
+}, 1000);
+
+// =====================
+// ALARM MANUAL
+// =====================
+let manualTime = "";
+let manualActive = false;
+
+function setAlarm(){
+  manualTime = document.getElementById("alarmTime").value;
+  manualActive = true;
+
+  document.getElementById("status").innerText =
+    "⏰ Alarm: " + manualTime;
+}
+
+// cek alarm manual
+setInterval(() => {
+
+  if(!manualActive) return;
+
+  let d = new Date();
+  let t = String(d.getHours()).padStart(2,'0') + ":" +
+          String(d.getMinutes()).padStart(2,'0');
+
+  if(t === manualTime){
+    manualActive = false;
+
+    alert("🔔 ALARM MANUAL!");
+    playSound();
+  }
+
+}, 1000);
+
+// =====================
+// SUARA
+// =====================
+function playSound(){
+  let audio = new Audio("https://www.islamcan.com/audio/adhan/azan1.mp3");
+  audio.play();
+}
+
+</script>
+
+</body>
+</html>
