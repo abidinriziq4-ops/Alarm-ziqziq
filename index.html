@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Islamic Smart App Full</title>
+<title>Islamic Smart App PRO</title>
 
 <style>
 body{
@@ -42,7 +42,7 @@ input,select,button{
 
 <body>
 
-<header>🕌 Islamic Smart App FULL</header>
+<header>🕌 Islamic Smart App PRO</header>
 
 <!-- JAM -->
 <div class="card">
@@ -65,7 +65,6 @@ input,select,button{
     <option>Batam</option>
     <option>Pekanbaru</option>
   </select>
-
   <br>
   <button onclick="loadSholat()">Update Waktu Sholat</button>
 </div>
@@ -79,6 +78,20 @@ input,select,button{
   <p id="isya">Isya: --</p>
 </div>
 
+<!-- 🔊 PILIH JENIS ALARM -->
+<div class="card">
+  <h3>🔊 Pilih Jenis Alarm</h3>
+
+  <select id="alarmMode">
+    <option value="alarm">Alarm Biasa</option>
+    <option value="azan">Adzan</option>
+  </select>
+
+  <p style="font-size:12px;color:#aaa">
+    (Untuk alarm manual)
+  </p>
+</div>
+
 <!-- ALARM MANUAL -->
 <div class="card">
   <h3>🔔 Alarm Manual</h3>
@@ -89,124 +102,13 @@ input,select,button{
   <p id="status">Belum diset</p>
 </div>
 
-<script>
+<!-- STOP -->
+<div class="card">
+  <button onclick="stopSound()">⛔ Stop Alarm</button>
+</div>
 
-// =====================
-// JAM REALTIME
-// =====================
-setInterval(() => {
-
-  let d = new Date();
-
-  let h = String(d.getHours()).padStart(2,'0');
-  let m = String(d.getMinutes()).padStart(2,'0');
-  let s = String(d.getSeconds()).padStart(2,'0');
-
-  document.getElementById("clock").innerText =
-    h + ":" + m + ":" + s;
-
-}, 1000);
-
-// =====================
-// DATA SHOLAT
-// =====================
-let prayer = {};
-let lastAuto = "";
-
-// =====================
-// API SHOLAT
-// =====================
-function loadSholat(){
-
-  let city = document.getElementById("city").value;
-
-  fetch("https://api.aladhan.com/v1/timingsByCity?city=" + city + "&country=Indonesia&method=20")
-  .then(r => r.json())
-  .then(d => {
-
-    prayer = d.data.timings;
-
-    document.getElementById("subuh").innerText = "Subuh: " + prayer.Fajr;
-    document.getElementById("dzuhur").innerText = "Dzuhur: " + prayer.Dhuhr;
-    document.getElementById("ashar").innerText = "Ashar: " + prayer.Asr;
-    document.getElementById("maghrib").innerText = "Maghrib: " + prayer.Maghrib;
-    document.getElementById("isya").innerText = "Isya: " + prayer.Isha;
-
-  })
-  .catch(e => alert("API error ❌"));
-}
-
-loadSholat();
-
-// =====================
-// ALARM SHOLAT AUTO
-// =====================
-setInterval(() => {
-
-  if(!prayer.Fajr) return;
-
-  let now = new Date();
-  let t = String(now.getHours()).padStart(2,'0') + ":" +
-          String(now.getMinutes()).padStart(2,'0');
-
-  let map = {
-    [prayer.Fajr.slice(0,5)]:"Subuh",
-    [prayer.Dhuhr.slice(0,5)]:"Dzuhur",
-    [prayer.Asr.slice(0,5)]:"Ashar",
-    [prayer.Maghrib.slice(0,5)]:"Maghrib",
-    [prayer.Isha.slice(0,5)]:"Isya"
-  };
-
-  if(map[t] && lastAuto !== t){
-    lastAuto = t;
-
-    alert("🕌 Waktu " + map[t]);
-    playSound();
-  }
-
-}, 1000);
-
-// =====================
-// ALARM MANUAL
-// =====================
-let manualTime = "";
-let manualActive = false;
-
-function setAlarm(){
-  manualTime = document.getElementById("alarmTime").value;
-  manualActive = true;
-
-  document.getElementById("status").innerText =
-    "⏰ Alarm: " + manualTime;
-}
-
-// cek alarm manual
-setInterval(() => {
-
-  if(!manualActive) return;
-
-  let d = new Date();
-  let t = String(d.getHours()).padStart(2,'0') + ":" +
-          String(d.getMinutes()).padStart(2,'0');
-
-  if(t === manualTime){
-    manualActive = false;
-
-    alert("🔔 ALARM MANUAL!");
-    playSound();
-  }
-
-}, 1000);
-
-// =====================
-// SUARA
-// =====================
-function playSound(){
-  let audio = new Audio("https://www.islamcan.com/audio/adhan/azan1.mp3");
-  audio.play();
-}
-
-</script>
+<!-- JS -->
+<script src="script.js"></script>
 
 </body>
 </html>
